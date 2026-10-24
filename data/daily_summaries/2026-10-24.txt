@@ -1,0 +1,49 @@
+=== Predict Weather Bot v6.1.1 — 2026-10-24 ===
+Mode: PAPER
+
+Yesterday: $-20.76 (2W / 5L)  |  Deployed: $43.79/$50  |  Open: 9
+
+⚠ 2 position(s) open longer than 36h - worth checking directly on Kalshi:
+  Los Angeles: high > 71°F, open 58h [KXHIGHLAX-26OCT22-T71]
+  Los Angeles: high 70-71°F, open 58h [KXHIGHLAX-26OCT22-B70.5]
+
+New trades, last 24h (7):
+  Chicago: NO on high 72-73°F @ 69c (16% conf) [KXHIGHCHI-26OCT24-B72.5]
+  Chicago: NO on high 70-71°F @ 41c (45% conf) [KXHIGHCHI-26OCT24-B70.5]
+  New York: NO on high 61-62°F @ 44c (38% conf) [KXHIGHNY-26OCT24-B61.5]
+  New York: YES on high 59-60°F @ 15c (53% conf) [KXHIGHNY-26OCT24-B59.5]
+  Miami: YES on high 86-87°F @ 5c (16% conf) [KXHIGHMIA-26OCT24-B86.5]
+  Austin: NO on high 87-88°F @ 19c (31% conf) [KXHIGHAUS-26OCT24-B87.5]
+  Miami: NO on high 84-85°F @ 36c (45% conf) [KXHIGHMIA-26OCT24-B84.5]
+
+Settled, last 24h (4):
+  Chicago: YES on high < 68°F — LOST -5.35 [!]  |  actual: high ≥ 68°F [KXHIGHCHI-26OCT22-T68]
+  Chicago: NO on high 74-75°F — WON +0.96 [!] [KXHIGHCHI-26OCT22-B74.5]
+  Austin: YES on high < 84°F — LOST -5.35 [!]  |  actual: high ≥ 84°F [KXHIGHAUS-26OCT22-T84]
+  Austin: NO on high 86-87°F — LOST -5.03 [KXHIGHAUS-26OCT23-B86.5]
+
+Net P&L, last 24h: $-14.77
+
+Model self-audit (v6.1.1): 5 settled trade(s) - need 30+ for a meaningful reading.
+  By version (model/market): v4* 0.501/0.174 (n=97)  v5* 0.457/0.108 (n=132)  v6.0* 0.602/0.010 (n=3)  v6.1.1 0.248/0.207 (n=5)
+  * used the wrong NBM column (overnight low); not a test of NBM
+
+Model vs market, ALL markets observed (unbiased; lower is better):
+  Atlanta (shadow): n=12  model 0.148 (unclamped 0.147)  market 0.094  -> market closer
+  Austin: n=12  model 0.192 (unclamped 0.199)  market 0.031  -> market closer
+  Boston (shadow): n=12  model 0.136 (unclamped 0.143)  market 0.180  -> model closer
+  Chicago: n=12  model 0.198 (unclamped 0.206)  market 0.055  -> market closer
+  Dallas (shadow): n=12  model 0.115 (unclamped 0.114)  market 0.035  -> market closer
+  Denver (shadow): n=12  model 0.151 (unclamped 0.151)  market 0.141  -> market closer
+  Houston (shadow): n=12  model 0.076 (unclamped 0.075)  market 0.046  -> market closer
+  Los Angeles: n=6  model 0.205 (unclamped 0.204)  market 0.040  -> market closer
+  Miami: n=12  model 0.167 (unclamped 0.166)  market 0.200  -> model closer
+  Minneapolis (shadow): n=12  model 0.097 (unclamped 0.096)  market 0.129  -> model closer
+  New York: n=12  model 0.177 (unclamped 0.182)  market 0.152  -> market closer
+  Phoenix (shadow): n=12  model 0.187 (unclamped 0.186)  market 0.108  -> market closer
+  Seattle (shadow): n=12  model 0.242 (unclamped 0.246)  market 0.119  -> market closer
+  ALL: n=150  model 0.159 (unclamped 0.161)  market 0.105
+
+14-day P&L: ▁█▁▃▅▃▄▄▂▅▁▆▂▅  (range $-29 to $+11, cumulative $-164.63)
+
+Simulated — no real money at risk. Consider live mode once these numbers look sane for a couple of weeks.
