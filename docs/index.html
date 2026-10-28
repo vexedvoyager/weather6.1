@@ -144,9 +144,9 @@
 
   <div class="conditions">
     <div><span class="label">Mode</span><span class="value">PAPER</span></div>
-    <div><span class="label">Deployed</span><span class="value">$4.55 / $50.00</span></div>
-    <div><span class="label">Open positions</span><span class="value">1</span></div>
-    <div><span class="label">Last updated</span><span class="value">2026-10-27 22:09 UTC</span></div>
+    <div><span class="label">Deployed</span><span class="value">$18.69 / $50.00</span></div>
+    <div><span class="label">Open positions</span><span class="value">4</span></div>
+    <div><span class="label">Last updated</span><span class="value">2026-10-28 01:22 UTC</span></div>
   </div>
 
   <section>
@@ -198,10 +198,34 @@
   </section>
 
   <section>
-    <h2>Open positions (1)</h2>
+    <h2>Open positions (4)</h2>
     <table>
       <tr><th>City</th><th>Contract</th><th>Side</th><th>Position</th><th>Model</th><th>Status</th></tr>
       
+    <tr>
+      <td>Miami</td>
+      <td>high 86-87°F</td>
+      <td>NO</td>
+      <td>13x @ 37&cent;</td>
+      <td>45%</td>
+      <td class="neutral">open</td>
+    </tr>
+    <tr>
+      <td>Chicago</td>
+      <td>high 74-75°F</td>
+      <td>YES</td>
+      <td>9x @ 53&cent;</td>
+      <td>65%</td>
+      <td class="neutral">open</td>
+    </tr>
+    <tr>
+      <td>Chicago</td>
+      <td>high 76-77°F</td>
+      <td>NO</td>
+      <td>8x @ 57&cent;</td>
+      <td>17%</td>
+      <td class="neutral">open</td>
+    </tr>
     <tr>
       <td>Austin</td>
       <td>high 82-83°F</td>
@@ -536,11 +560,11 @@ const ctx = document.getElementById('pnlChart').getContext('2d');
 new Chart(ctx, {
   type: 'line',
   data: {
-    labels: ["09-13", "09-14", "09-15", "09-16", "09-17", "09-18", "09-19", "09-20", "09-21", "09-22", "09-23", "09-24", "09-25", "09-26", "09-27", "09-28", "09-29", "09-30", "10-01", "10-02", "10-03", "10-04", "10-05", "10-06", "10-07", "10-08", "10-09", "10-10", "10-11", "10-12", "10-13", "10-14", "10-15", "10-16", "10-17", "10-18", "10-19", "10-20", "10-21", "10-22", "10-23", "10-24", "10-25", "10-26", "10-27"],
+    labels: ["09-14", "09-15", "09-16", "09-17", "09-18", "09-19", "09-20", "09-21", "09-22", "09-23", "09-24", "09-25", "09-26", "09-27", "09-28", "09-29", "09-30", "10-01", "10-02", "10-03", "10-04", "10-05", "10-06", "10-07", "10-08", "10-09", "10-10", "10-11", "10-12", "10-13", "10-14", "10-15", "10-16", "10-17", "10-18", "10-19", "10-20", "10-21", "10-22", "10-23", "10-24", "10-25", "10-26", "10-27", "10-28"],
     datasets: [
       {
         label: 'Cumulative P&L ($)',
-        data: [-10.64, -10.64, -18.27, -39.52, -58.98, -66.53, -81.53, -54.19, -74.39, -78.8, -105.76, -105.76, -129.26, -129.26, -130.21, -138.53, -148.16, -156.79, -169.77, -177.26, -191.89, -199.15, -206.7, -208.32, -219.25, -225.83, -237.26, -244.97, -274.03, -262.83, -286.39, -299.12, -302.27, -315.31, -325.73, -334.69, -356.32, -361.28, -387.93, -383.81, -404.57, -409.6, -394.41, -386.57, -419.93],
+        data: [0.0, -7.63, -28.88, -48.34, -55.89, -70.89, -43.55, -63.75, -68.16, -95.12, -95.12, -118.62, -118.62, -119.57, -127.89, -137.52, -146.15, -159.13, -166.62, -181.25, -188.51, -196.06, -197.68, -208.61, -215.19, -226.62, -234.33, -263.39, -252.19, -275.75, -288.48, -291.63, -304.67, -315.09, -324.05, -345.68, -350.64, -377.29, -373.17, -393.93, -398.96, -383.77, -375.93, -409.29, -409.29],
         borderColor: '#E8A33D',
         backgroundColor: 'rgba(232, 163, 61, 0.12)',
         borderWidth: 2,
