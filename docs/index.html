@@ -138,15 +138,15 @@
 
   <h1>Predict Weather Bot <span style="font-weight:400;opacity:.6">v6.2</span></h1>
   <div class="hero">
-    <div class="hero-number loss">$-439.63</div>
-    <div class="hero-label">Total settled P&amp;L, 264 trade(s) settled, 39% win rate</div>
+    <div class="hero-number loss">$-437.23</div>
+    <div class="hero-label">Total settled P&amp;L, 265 trade(s) settled, 40% win rate</div>
   </div>
 
   <div class="conditions">
     <div><span class="label">Mode</span><span class="value">PAPER</span></div>
-    <div><span class="label">Deployed</span><span class="value">$37.96 / $50.00</span></div>
-    <div><span class="label">Open positions</span><span class="value">8</span></div>
-    <div><span class="label">Last updated</span><span class="value">2026-10-30 13:39 UTC</span></div>
+    <div><span class="label">Deployed</span><span class="value">$43.05 / $50.00</span></div>
+    <div><span class="label">Open positions</span><span class="value">9</span></div>
+    <div><span class="label">Last updated</span><span class="value">2026-10-30 18:53 UTC</span></div>
   </div>
 
   <section>
@@ -175,10 +175,10 @@
         </tr>
         <tr>
           <td>Los Angeles</td>
-          <td>51</td>
-          <td>17</td>
+          <td>52</td>
+          <td>18</td>
           <td>34</td>
-          <td class="loss">$-150.08</td>
+          <td class="loss">$-147.68</td>
         </tr>
         <tr>
           <td>Miami</td>
@@ -198,11 +198,31 @@
   </section>
 
   <section>
-    <h2>Open positions (8)</h2>
+    <h2>Open positions (9)</h2>
     <p class="neutral" style="margin: 4px 0 12px">Market day = the date the contract is about. Opened/settled times are UTC.</p>
     <table>
       <tr><th>City</th><th>Market day</th><th>Contract</th><th>Side</th><th>Position</th><th>Model</th><th>Opened</th><th>Status</th></tr>
       
+    <tr>
+      <td>Austin</td>
+      <td>Oct 31</td>
+      <td>high < 77°F</td>
+      <td>NO</td>
+      <td>9x @ 53&cent;</td>
+      <td>21%</td>
+      <td class="neutral">Oct 30, 18:53 UTC</td>
+      <td class="neutral">open</td>
+    </tr>
+    <tr>
+      <td>New York</td>
+      <td>Oct 31</td>
+      <td>high < 59°F</td>
+      <td>NO</td>
+      <td>20x @ 24&cent;</td>
+      <td>56%</td>
+      <td class="neutral">Oct 30, 18:53 UTC</td>
+      <td class="neutral">open</td>
+    </tr>
     <tr>
       <td>New York</td>
       <td>Oct 30</td>
@@ -273,16 +293,6 @@
       <td class="neutral">Oct 30, 00:52 UTC</td>
       <td class="neutral">open</td>
     </tr>
-    <tr>
-      <td>Los Angeles</td>
-      <td>Oct 29</td>
-      <td>high 74-75°F</td>
-      <td>NO</td>
-      <td>7x @ 64&cent;</td>
-      <td>16%</td>
-      <td class="neutral">Oct 28, 19:28 UTC</td>
-      <td class="neutral">open</td>
-    </tr>
     </table>
   </section>
 
@@ -291,6 +301,16 @@
     <table>
       <tr><th>City</th><th>Market day</th><th>Contract</th><th>Side</th><th>Position</th><th>Model</th><th>Opened</th><th>Outcome</th><th>Settled</th></tr>
       
+    <tr>
+      <td>Los Angeles</td>
+      <td>Oct 29</td>
+      <td>high 74-75°F</td>
+      <td>NO</td>
+      <td>7x @ 64&cent;</td>
+      <td>16%</td>
+      <td class="neutral">Oct 28, 19:28 UTC</td>
+      <td class="gain">NO &middot; $+2.40</td><td class="neutral">Oct 30, 18:53 UTC</td>
+    </tr>
     <tr>
       <td>Los Angeles</td>
       <td>Oct 28</td>
@@ -531,16 +551,6 @@
       <td class="neutral">Oct 24, 06:31 UTC</td>
       <td class="gain">YES &middot; $+27.75</td><td class="neutral">Oct 25, 13:57 UTC</td>
     </tr>
-    <tr>
-      <td>New York</td>
-      <td>Oct 24</td>
-      <td>high 61-62°F</td>
-      <td>NO</td>
-      <td>11x @ 44&cent;</td>
-      <td>38%</td>
-      <td class="neutral">Oct 24, 01:42 UTC</td>
-      <td class="gain">NO &middot; $+5.97</td><td class="neutral">Oct 25, 13:57 UTC</td>
-    </tr>
     </table>
   </section>
 
@@ -663,7 +673,7 @@ new Chart(ctx, {
     datasets: [
       {
         label: 'Cumulative P&L ($)',
-        data: [-21.25, -40.71, -48.26, -63.26, -35.92, -56.12, -60.53, -87.49, -87.49, -110.99, -110.99, -111.94, -120.26, -129.89, -138.52, -151.5, -158.99, -173.62, -180.88, -188.43, -190.05, -200.98, -207.56, -218.99, -226.7, -255.76, -244.56, -268.12, -280.85, -284.0, -297.04, -307.46, -316.42, -338.05, -343.01, -369.66, -365.54, -386.3, -391.33, -376.14, -368.3, -401.66, -406.33, -432.31, -432.31],
+        data: [-21.25, -40.71, -48.26, -63.26, -35.92, -56.12, -60.53, -87.49, -87.49, -110.99, -110.99, -111.94, -120.26, -129.89, -138.52, -151.5, -158.99, -173.62, -180.88, -188.43, -190.05, -200.98, -207.56, -218.99, -226.7, -255.76, -244.56, -268.12, -280.85, -284.0, -297.04, -307.46, -316.42, -338.05, -343.01, -369.66, -365.54, -386.3, -391.33, -376.14, -368.3, -401.66, -406.33, -432.31, -429.91],
         borderColor: '#E8A33D',
         backgroundColor: 'rgba(232, 163, 61, 0.12)',
         borderWidth: 2,
