@@ -121,7 +121,7 @@ def test_generate_summary_includes_shadow_section_only_when_relevant():
 def test_generate_summary_flags_extreme_trades_with_marker():
     path = _temp_db()
     db.insert_trade(
-        path, "T1", "Chicago", "yes", 5, 3, 0.95, 0.8, "paper",  # 0.95 = PROBABILITY_CEILING
+        path, "T1", "Chicago", "yes", 5, 3, 0.99, 0.8, "paper",  # = PROBABILITY_CEILING
         threshold_description="high < 66°F",
     )
     cfg = _minimal_cfg(path)

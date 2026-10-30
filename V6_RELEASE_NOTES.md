@@ -1,4 +1,29 @@
-# Predict Weather Bot v6.1.1 — release notes
+# Predict Weather Bot v6.2 — release notes
+
+## v6.2 — guards from the first week of corrected data (2026-10-30)
+
+Week-one analysis of v6.1.1 (32 settled trades, 522 scored markets): the corrected
+forecasts are sound (median error +0.8F, typical miss 2.2F) but still lose to the
+market on the all-markets scorecard (Brier 0.119 vs 0.102, Seattle excluded).
+Most of the trading loss was one pattern: YES long shots at 10c or less (0 for 8,
+-$42.77 of the -$57.03). v6.2 changes:
+
+* **No YES purchases at 10c or less** (`guards.min_yes_price_cents`, default 11).
+* **Minimum edge raised to 15 points** (`guards.min_probability_gap`; was 8).
+* **Probability bounds widened to 1% / 99%** (were 5% / 95%). The 5% floor made
+  the model say 8.5% for contracts that paid 1.3% of the time.
+* **Seattle left out of the scorecard headline** (`guards.scorecard_exclude_cities`)
+  because its forecasts ran ~8F too low. It still shows its own line, still shadow.
+* **Scorecard now ignores wrong-column versions** (v4-v6.0) as well.
+* **Stopping rule in the Daily Summary**: city-days scored vs 300, and whether the
+  model is ahead of or behind the market (`guards.checkpoint_city_days`).
+* **Dashboard**: open positions and recent settled trades now show the market day
+  (the date the contract is about), when the position was opened and when it settled
+  (all UTC).
+
+All guard settings have defaults in code (src/guards.py); config.yaml does not need
+to change. Add a `guards:` section there only to override them.
+
 
 ## v6.1.1 — bracket clamp fix (2026-10-22)
 

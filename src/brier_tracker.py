@@ -148,15 +148,24 @@ def compute_brier_summary(db_path: str, bot_version: str = None) -> dict:
     }
 
 
-def compute_observation_brier(db_path: str) -> dict:
+def compute_observation_brier(db_path: str, exclude_cities=None, checkpoint_city_days: int = 300) -> dict:
     """
     Unbiased scorecard from market_observations (every market observed, not
     just traded ones): model P(YES) vs market YES price, both scored
     against the actual YES/NO outcome. Returns
     {"overall": {...}|None, "by_city": {city: {n, model_brier, market_brier,
-    is_shadow}}}.
+    is_shadow, excluded}}, "city_days": int, "excluded_cities": [...],
+    "checkpoint_city_days": int}.
+
+    v6.2: observations made under INVALID_FORECAST_VERSIONS (wrong NBM column)
+    are dropped, and cities in `exclude_cities` (e.g. Seattle) still get their own
+    line but do not count toward the overall score or the city-day count.
     """
-    rows = db.get_settled_market_observations(db_path)
+    import re
+    from src.version import INVALID_FORECAST_VERSIONS
+    exclude = set(exclude_cities or [])
+    rows = [r for r in db.get_settled_market_observations(db_path)
+            if r.get("bot_version") not in INVALID_FORECAST_VERSIONS]
 
     def score(rs):
         n = len(rs)
@@ -169,9 +178,8 @@ def compute_observation_brier(db_path: str) -> dict:
             "market_brier": round(
                 sum((r["market_yes_cents"] / 100.0 - o) ** 2 for r, o in zip(rs, outs)) / n, 4),
         }
-        # The same forecast WITHOUT the 5%/95% confidence clamp - lets the data decide
-        # whether the clamp (a stopgap from v5) is helping or hurting now that forecasts
-        # come from the right NBM column.
+        # The same forecast WITHOUT the probability clamp - lets the data decide
+        # whether the clamp is helping or hurting.
         if all(r.get("raw_model_prob") is not None for r in rs):
             result["raw_model_brier"] = round(
                 sum((r["raw_model_prob"] - o) ** 2 for r, o in zip(rs, outs)) / n, 4)
@@ -182,12 +190,22 @@ def compute_observation_brier(db_path: str) -> dict:
         c_rows = [r for r in rows if r["city"] == city]
         scored = score(c_rows)
         scored["is_shadow"] = bool(c_rows[0]["is_shadow_city"])
+        scored["excluded"] = city in exclude
         by_city[city] = scored
-    return {"overall": score(rows), "by_city": by_city}
+
+    counted = [r for r in rows if r["city"] not in exclude]
+    city_days = set()
+    for r in counted:
+        m = re.search(r"-(\d\d[A-Z]{3}\d\d)-", r["ticker"])
+        city_days.add((r["city"], m.group(1) if m else r["ticker"]))
+    return {
+        "overall": score(counted), "by_city": by_city, "city_days": len(city_days),
+        "excluded_cities": sorted(exclude), "checkpoint_city_days": checkpoint_city_days,
+    }
 
 
 def format_observation_brier(obs: dict) -> str:
-    """Per-city lines for the daily summary; empty string until something settles."""
+    """Per-city lines plus the stopping-rule line; empty string until something settles."""
     if not obs["overall"]:
         return ""
     lines = [
@@ -195,6 +213,8 @@ def format_observation_brier(obs: dict) -> str:
     ]
     for city, d in obs["by_city"].items():
         tag = " (shadow)" if d["is_shadow"] else ""
+        if d.get("excluded"):
+            tag += " (EXCLUDED from ALL: forecasts known to be off)"
         better = "model" if d["model_brier"] < d["market_brier"] else "market"
         raw = f" (unclamped {d['raw_model_brier']:.3f})" if "raw_model_brier" in d else ""
         lines.append(
@@ -204,6 +224,27 @@ def format_observation_brier(obs: dict) -> str:
     o = obs["overall"]
     raw = f" (unclamped {o['raw_model_brier']:.3f})" if "raw_model_brier" in o else ""
     lines.append(f"  ALL: n={o['n']}  model {o['model_brier']:.3f}{raw}  market {o['market_brier']:.3f}")
+
+    # --- Stopping rule (v6.2) ----------------------------------------------------
+    target = obs.get("checkpoint_city_days", 300)
+    days = obs.get("city_days", 0)
+    gap = o["model_brier"] - o["market_brier"]
+    if days < target:
+        lines.append(
+            f"  STOPPING RULE: {days}/{target} city-days scored so far. "
+            f"Model is {'BEHIND' if gap > 0 else 'AHEAD OF'} the market by {abs(gap):.3f}. "
+            f"Decide at {target}."
+        )
+    elif gap < 0:
+        lines.append(
+            f"  STOPPING RULE: CHECKPOINT REACHED ({days} city-days). Model is AHEAD of the "
+            f"market by {abs(gap):.3f}. Keep going; next, check it holds after fees."
+        )
+    else:
+        lines.append(
+            f"  STOPPING RULE: CHECKPOINT REACHED ({days} city-days). Model is STILL BEHIND the "
+            f"market by {gap:.3f}. Per the plan: stop building on the day-ahead approach."
+        )
     return "\n".join(lines)
 
 

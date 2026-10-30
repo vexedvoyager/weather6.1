@@ -325,8 +325,13 @@ def generate_summary(cfg: dict, date_str: str = None) -> str:
     lines.append("")
 
     # --- Unbiased scorecard from every observed market (v6.0, item #22) ----------
+    from src import guards as guards_mod
+    guards = guards_mod.get_guards(cfg)
     obs_text = brier_tracker.format_observation_brier(
-        brier_tracker.compute_observation_brier(db_path)
+        brier_tracker.compute_observation_brier(
+            db_path, exclude_cities=guards["scorecard_exclude_cities"],
+            checkpoint_city_days=guards["checkpoint_city_days"],
+        )
     )
     if obs_text:
         lines.append(obs_text)

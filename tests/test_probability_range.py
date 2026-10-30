@@ -39,11 +39,14 @@ CHI = {"p10": 70, "p25": 70, "p50": 71, "p75": 72, "p90": 73}
 
 
 def test_tail_bracket_is_never_reported_as_zero():
-    # Raw ~3.3%: used to come out exactly 0.0 because both ends clamped to 0.95.
+    # Raw ~3.3%: used to come out exactly 0.0 because both ends clamped to the same bound.
     raw = probability_within_range(CHI, 67.5, 69.5, clamp=False)
     clamped = probability_within_range(CHI, 67.5, 69.5)
-    assert raw < PROBABILITY_FLOOR
-    assert clamped == PROBABILITY_FLOOR
+    assert 0 < clamped
+    assert clamped == max(raw, PROBABILITY_FLOOR)
+    # A bracket far outside the forecast hits the floor exactly, never 0.
+    far = probability_within_range(CHI, 40.5, 42.5)
+    assert far == PROBABILITY_FLOOR
 
 
 def test_clamped_bracket_always_within_bounds():

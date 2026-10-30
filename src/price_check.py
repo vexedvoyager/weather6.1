@@ -15,6 +15,7 @@ import sys
 import uuid
 from datetime import datetime, timezone
 
+from src import guards as guards_mod
 from src import alerts, db, edge, fees
 from src.config import load_config, resolve_path
 from src.market_parsing import build_market_snapshot
@@ -103,6 +104,9 @@ def run_price_check(cfg: dict):
         db.log_scan(db_path, 0, 0, 0, db_open, live_open, notes="daily_loss_limit_hit")
         return
 
+    guards = guards_mod.get_guards(cfg)
+    min_gap = guards["min_probability_gap"]
+    logger.info("Guards active: %s", guards)
     tickers_scanned = 0
     tickers_eligible = 0
     trades_opened = 0
@@ -178,7 +182,7 @@ def run_price_check(cfg: dict):
             gap = model_prob - market_prob
             want_side = "yes" if gap > 0 else "no"
 
-            if abs(gap) < cfg["edge"]["min_probability_gap"]:
+            if abs(gap) < min_gap:
                 # --- Shadow-trade detection (v5, item #10) ------------------
                 # The CLAMPED probability didn't clear the edge threshold -
                 # a normal trade won't happen. But if the RAW (unclamped)
@@ -189,7 +193,7 @@ def run_price_check(cfg: dict):
                 if raw_model_prob is not None and raw_model_prob != model_prob:
                     raw_gap = raw_model_prob - market_prob
                     raw_want_side = "yes" if raw_gap > 0 else "no"
-                    if abs(raw_gap) >= cfg["edge"]["min_probability_gap"]:
+                    if abs(raw_gap) >= min_gap:
                         raw_scores = edge.composite_score(
                             snap, raw_model_prob, raw_want_side,
                             cfg["operations"]["min_volume_contracts"], cfg["edge"]["weights"],
@@ -227,6 +231,13 @@ def run_price_check(cfg: dict):
                 continue
 
             price_cents = snap.yes_ask_cents if want_side == "yes" else snap.no_ask_cents
+            if guards_mod.blocks_cheap_yes(want_side, price_cents, guards):
+                # v6.2 guard: YES long shots at 10c or less went 0 for 8 (v6.1.1)
+                # and 0 for 25 (v4). Skipped, not shadow-tracked (the scorecard
+                # already records what the market did).
+                logger.info("SKIP cheap YES ticker=%s price_cents=%d (< %d)",
+                            ticker, price_cents, guards["min_yes_price_cents"])
+                continue
             count = max(1, max_trade_cents // max(price_cents, 1))
             cost_cents = count * price_cents
 

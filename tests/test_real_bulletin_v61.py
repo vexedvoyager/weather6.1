@@ -18,6 +18,7 @@ import pytest
 from src import nbm
 from src.forecast_refresh import model_probability_for_market
 from src.market_parsing import market_date_from_ticker
+from src.probability import PROBABILITY_FLOOR
 
 RUN = "2026-10-21T19Z"
 BULLETIN = (Path(__file__).parent / "fixtures" / "nbm_real_2026-10-21T19Z.txt").read_text()
@@ -175,6 +176,6 @@ def test_forecast_refresh_end_to_end_on_real_bulletin(tmp_path):
     assert got["KXHIGHCHI-26OCT22-B70.5"]["nbm_forecast_hour"] == 29
     assert got["KXHIGHCHI-26OCT22-B70.5"]["nbm_valid_utc"].startswith("2026-10-23T00:00")
     assert json.loads(got["KXHIGHCHI-26OCT22-B70.5"]["ladder_json"])["p50"] == 70
-    # v5 gave "high < 68" 95% (it forecast from a 52F overnight low); now it is the floor
-    assert got["KXHIGHCHI-26OCT22-T68"]["model_prob"] == 0.05
-    assert got["KXHIGHCHI-26OCT22-T75"]["model_prob"] == 0.05
+    # v5 gave "high < 68" 95% (it forecast from a 52F overnight low); now it is the floor (v6.2: 1%)
+    assert got["KXHIGHCHI-26OCT22-T68"]["model_prob"] == PROBABILITY_FLOOR
+    assert got["KXHIGHCHI-26OCT22-T75"]["model_prob"] == PROBABILITY_FLOOR

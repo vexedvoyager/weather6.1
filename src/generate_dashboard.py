@@ -16,6 +16,7 @@ from pathlib import Path
 
 from src import brier_tracker, db
 from src.config import load_config, resolve_path
+from src.market_parsing import market_date_from_ticker
 from src.daily_summary import format_probability, _is_extreme, _actual_outcome_note
 from src.version import BOT_VERSION
 
@@ -106,6 +107,25 @@ def _shadow_row_html(s: dict) -> str:
     </tr>"""
 
 
+def _fmt_stamp(iso: str | None) -> str:
+    """'2026-10-28T14:05:11+00:00' -> 'Oct 28, 14:05 UTC' (the DB stores UTC)."""
+    if not iso:
+        return "—"
+    try:
+        dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+    except ValueError:
+        return iso[:16]
+    if dt.tzinfo is not None:
+        dt = dt.astimezone(timezone.utc)
+    return f"{dt.strftime('%b')} {dt.day}, {dt.strftime('%H:%M')} UTC"
+
+
+def _fmt_market_day(ticker: str) -> str:
+    """The day the contract is ABOUT (from the ticker), e.g. 'Oct 28'."""
+    d = market_date_from_ticker(ticker)
+    return f"{d.strftime('%b')} {d.day}" if d else "—"
+
+
 def _fmt_usd(cents: int) -> str:
     return f"${cents/100:+,.2f}" if cents != 0 else "$0.00"
 
@@ -120,16 +140,21 @@ def _trade_row_html(t: dict, settled: bool) -> str:
         note = _actual_outcome_note(description, t["outcome"])
         note_html = f'<br><span class="neutral" style="font-size:0.75rem">{note}</span>' if note else ""
         outcome_col = f'<td class="{pnl_class}">{t["outcome"].upper()} &middot; {_fmt_usd(pnl)}{note_html}</td>'
+        when_col = f'<td class="neutral">{_fmt_stamp(t.get("settled_at"))}</td>'
     else:
         outcome_col = '<td class="neutral">open</td>'
+        when_col = ''
+
     return f"""
     <tr>
       <td>{t['city']}</td>
+      <td>{_fmt_market_day(t['ticker'])}</td>
       <td>{description}{flag}</td>
       <td>{side_label}</td>
       <td>{t['count']}x @ {t['entry_price_cents']}&cent;</td>
       <td>{format_probability(t['forecast_prob'])}</td>
-      {outcome_col}
+      <td class="neutral">{_fmt_stamp(t.get('opened_at'))}</td>
+      {outcome_col}{when_col}
     </tr>"""
 
 
@@ -182,9 +207,9 @@ def generate_dashboard_html(cfg: dict, db_path: str) -> str:
         city_rows = '<tr><td colspan="5" class="neutral">No settled trades yet.</td></tr>'
 
     open_rows = "".join(_trade_row_html(t, settled=False) for t in open_positions) or \
-        '<tr><td colspan="6" class="neutral">No open positions.</td></tr>'
+        '<tr><td colspan="8" class="neutral">No open positions.</td></tr>'
     settled_rows = "".join(_trade_row_html(t, settled=True) for t in recent_settled) or \
-        '<tr><td colspan="6" class="neutral">No settled trades yet.</td></tr>'
+        '<tr><td colspan="9" class="neutral">No settled trades yet.</td></tr>'
 
     # --- Shadow trades section (v5) -----------------------------------------------
     shadow_rows = "".join(_shadow_row_html(s) for s in shadow_recent_settled) or \
@@ -388,8 +413,9 @@ def generate_dashboard_html(cfg: dict, db_path: str) -> str:
 
   <section>
     <h2>Open positions ({open_count})</h2>
+    <p class="neutral" style="margin: 4px 0 12px">Market day = the date the contract is about. Opened/settled times are UTC.</p>
     <table>
-      <tr><th>City</th><th>Contract</th><th>Side</th><th>Position</th><th>Model</th><th>Status</th></tr>
+      <tr><th>City</th><th>Market day</th><th>Contract</th><th>Side</th><th>Position</th><th>Model</th><th>Opened</th><th>Status</th></tr>
       {open_rows}
     </table>
   </section>
@@ -397,7 +423,7 @@ def generate_dashboard_html(cfg: dict, db_path: str) -> str:
   <section>
     <h2>Recent settled trades</h2>
     <table>
-      <tr><th>City</th><th>Contract</th><th>Side</th><th>Position</th><th>Model</th><th>Outcome</th></tr>
+      <tr><th>City</th><th>Market day</th><th>Contract</th><th>Side</th><th>Position</th><th>Model</th><th>Opened</th><th>Outcome</th><th>Settled</th></tr>
       {settled_rows}
     </table>
   </section>

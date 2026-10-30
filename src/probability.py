@@ -35,8 +35,12 @@ import math
 # IMPROVEMENTS.md item #10 for the full reasoning and honest caveat).
 # Refining these needs item #11 (raw percentile visibility) and more
 # settled trades after this ships.
-PROBABILITY_FLOOR = 0.05
-PROBABILITY_CEILING = 0.95
+# v6.2: widened from 0.05/0.95. On the v6.1.1 scorecard, contracts priced 0-5c
+# paid YES 1.3% of the time while the model said 8.5% (partly this floor). The
+# bounds stay symmetric so a near-certain YES is not capped harder than a
+# near-impossible one.
+PROBABILITY_FLOOR = 0.01
+PROBABILITY_CEILING = 0.99
 
 
 def _std_normal_cdf(z: float) -> float:

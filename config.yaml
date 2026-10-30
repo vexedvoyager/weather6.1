@@ -1,5 +1,5 @@
 # =============================================================================
-# Predict Weather Bot v6.1.1 — Configuration
+# Predict Weather Bot v6.2 — Configuration
 # =============================================================================
 # Version history:
 #   v5 went active: 2026-09-25 (confidence floor/ceiling + shadow-tracking,
@@ -16,6 +16,10 @@
 #     of NBM and are excluded from the headline Brier score.)
 #   v6.1.1 went active: 2026-10-22 (bracket probabilities are clamped on the
 #     final result, not on each end, so a tail bracket is never reported as 0%.)
+#   v6.2 went active: 2026-10-30 (guards from the first week of corrected data:
+#     no cheap YES bets, 15-point minimum edge, 1%/99% probability bounds,
+#     Seattle left out of the scorecard headline, stopping rule — see the
+#     GUARDS section below and IMPROVEMENTS.md item #27.)
 # =============================================================================
 # This is the ONE file you should need to touch regularly. Everything here
 # is plain English settings, not code.
@@ -140,13 +144,23 @@ risk:
 
 # --- EDGE THRESHOLDS ------------------------------------------------------------
 edge:
-  min_probability_gap: 0.08        # Model vs market must disagree by at least this much
+  min_probability_gap: 0.08        # IGNORED since v6.2 - the minimum gap now lives in guards: below
   min_composite_score: 0.65        # Composite edge score (0-1) required to trade
   weights:
     spread: 0.30
     volume: 0.20
     imbalance: 0.25
     mispricing: 0.25
+
+# --- GUARDS (v6.2, item #27) ----------------------------------------------------
+# These are the v6.2 trading rules. The values below match the built-in defaults
+# in src/guards.py; delete this section and the same values apply.
+guards:
+  min_yes_price_cents: 11          # Never BUY YES when it costs 10 cents or less
+                                    # (YES long shots went 0 for 8 in v6.1.1, 0 for 25 in v4)
+  min_probability_gap: 0.15        # Model vs market must disagree by at least 15 points
+  scorecard_exclude_cities: ["Seattle"]  # Left out of the ALL-markets score (forecasts ~8F low)
+  checkpoint_city_days: 300        # Stopping-rule checkpoint shown in the Daily Summary
 
 # --- PROBABILITY MODEL ------------------------------------------------------------
 probability_model:
